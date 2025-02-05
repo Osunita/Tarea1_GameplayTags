@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Tarea1_GameplayTagsCharacter.h"
+
+#include "Attacks/AttackBase.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
@@ -10,6 +12,13 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+
+void ATarea1_GameplayTagsCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InitializeCharacter();
+}
 
 ATarea1_GameplayTagsCharacter::ATarea1_GameplayTagsCharacter()
 {
@@ -48,4 +57,31 @@ ATarea1_GameplayTagsCharacter::ATarea1_GameplayTagsCharacter()
 void ATarea1_GameplayTagsCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+}
+
+void ATarea1_GameplayTagsCharacter::InitializeCharacter()
+{
+	if (CharacterData)
+	{
+		TArray<FCharacterAttributes*> OutData;
+		CharacterData->GetAllRows(TEXT(""), OutData);
+
+		if (!OutData.IsEmpty())
+		{
+			FCharacterAttributes** Attr = OutData.FindByPredicate([this](FCharacterAttributes* Row)
+			{
+				return Row->CharacterClassTag.MatchesTag(CharacterClassTag);
+			});
+			
+			if (Attr) Attributes = *Attr;			
+		}
+	}
+}
+
+void ATarea1_GameplayTagsCharacter::Attack()
+{
+	if(const TSubclassOf<UAttackBase> BasicAttack = Attributes->BasicAttack)
+	{
+		BasicAttack->GetDefaultObject<UAttackBase>()->TryAttack(GetOwner());
+	}
 }
