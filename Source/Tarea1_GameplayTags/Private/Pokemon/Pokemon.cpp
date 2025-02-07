@@ -36,6 +36,7 @@ void UPokemon::Attack(UPokemon* Target, UPokeAttack* AttackToUse)
 	
 }
 
+
 float UPokemon::CalculateDamage(const UPokeAttack* Attack, const FGameplayTagContainer& TargetTypes)
 {
 	FTypeEffectiveness* AttackEffectiveness = TypeEffectivenessTable->FindRow<FTypeEffectiveness>(Attack->AttackType.GetTagName(),TEXT("Multiply"));
